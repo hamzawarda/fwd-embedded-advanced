@@ -1,10 +1,10 @@
 /**********************************************************************************************************************
  *  FILE DESCRIPTION
  *  -----------------------------------------------------------------------------------------------------------------*/
-/**        \file  main.c
- *        \brief  main file
+/**        \file  Timer.c
+ *        \brief  System timer
  *
- *      \details  user systick ISR, and main function
+ *      \details  The Driver Configure system timer
  *               
  *
  *********************************************************************************************************************/
@@ -13,17 +13,9 @@
  *  INCLUDES
  *********************************************************************************************************************/
 #include "Std_Types.h"
-#include "Gpio.h"
+#include "tm4c123gh6pm.h"
 #include "Timer.h"
-#include "Interrupt.h"
 
-/* Delay time in Micro seconds */
-#define ON_Time 4000000
-#define OFF_Time 1000000
-
-/* LED state values. */
-#define ON_State 1
-#define OFF_State 0
 /**********************************************************************************************************************
 *  LOCAL MACROS CONSTANT\FUNCTION
 *********************************************************************************************************************/	
@@ -31,7 +23,7 @@
 /**********************************************************************************************************************
  *  LOCAL DATA 
  *********************************************************************************************************************/
-uint32 State= OFF_State;
+
 /**********************************************************************************************************************
  *  GLOBAL DATA
  *********************************************************************************************************************/
@@ -49,8 +41,8 @@ uint32 State= OFF_State;
  *********************************************************************************************************************/
 
 /******************************************************************************
-* \Syntax          : void TimerIsr(void)                                      
-* \Description     : Systick User ISR                                    
+* \Syntax          : void SysTick_Init(void)                                      
+* \Description     : initialize system timer Module by connecting systick ISR                                    
 *                                                                             
 * \Sync\Async      : Synchronous                                               
 * \Reentrancy      : Non Reentrant                                             
@@ -58,39 +50,39 @@ uint32 State= OFF_State;
 * \Parameters (out): None                                                      
 * \Return value:   : None
 *******************************************************************************/
-void TimerIsr(void){
-	if(State == OFF_State){
-		Gpio_Pf1_On();
-		State= ON_State;
-		SysTick_Run(ON_Time);
-	}
-	else{
-		Gpio_Pf1_Off();
-		State= OFF_State;
-		SysTick_Run(OFF_Time);
-	}
+void SysTick_Init(void)
+{
+	
+	/*TODO : Put the reload value*/
+  NVIC_ST_RELOAD_R = 0xFFFFFF; 
+
+	/*TODO : Configure SysTick -systim clock -Interrupt enabled, continues mood. */
+	NVIC_ST_CTRL_R = 0b111u;
+
 }
 
 /******************************************************************************
-* \Syntax          : int main(void)                                      
-* \Description     : main function contains GPIO, Timer, and Interrupt Initializations                                    
+* \Syntax          : void SysTick_Run(uint32)                                      
+* \Description     : start system timer Module by parsing the Configuration 
+*                    into related registers, and start counting.                                    
 *                                                                             
 * \Sync\Async      : Synchronous                                               
 * \Reentrancy      : Non Reentrant                                             
-* \Parameters (in) : None                     
+* \Parameters (in) : Delay time in microseconds                     
 * \Parameters (out): None                                                      
 * \Return value:   : None
 *******************************************************************************/
-int main (void){
-	Gpio_F_Init();
-	SysTick_Init();
-	SysTick_Callback(TimerIsr);
-	SysTick_Run(OFF_Time);
-	while(1){
-	}
-	return 0;
+void SysTick_Run(uint32 Dmsec)
+{
+		
+	/*TODO : Put the reload value*/
+  NVIC_ST_RELOAD_R = 16* Dmsec; 
+
+  /*TODO : Clear systik timer*/  
+	NVIC_ST_CURRENT_R =0;
+	
 }
 
 /**********************************************************************************************************************
- *  END OF FILE: main.c
+ *  END OF FILE: Timer.c
  *********************************************************************************************************************/

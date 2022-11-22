@@ -1,10 +1,10 @@
 /**********************************************************************************************************************
  *  FILE DESCRIPTION
  *  -----------------------------------------------------------------------------------------------------------------*/
-/**        \file  main.c
- *        \brief  main file
+/**        \file  Interrupt.c
+ *        \brief  Interrupt driver
  *
- *      \details  user systick ISR, and main function
+ *      \details  The Driver Configure interrupts
  *               
  *
  *********************************************************************************************************************/
@@ -13,17 +13,9 @@
  *  INCLUDES
  *********************************************************************************************************************/
 #include "Std_Types.h"
-#include "Gpio.h"
-#include "Timer.h"
+#include "tm4c123gh6pm.h"
 #include "Interrupt.h"
 
-/* Delay time in Micro seconds */
-#define ON_Time 4000000
-#define OFF_Time 1000000
-
-/* LED state values. */
-#define ON_State 1
-#define OFF_State 0
 /**********************************************************************************************************************
 *  LOCAL MACROS CONSTANT\FUNCTION
 *********************************************************************************************************************/	
@@ -31,11 +23,11 @@
 /**********************************************************************************************************************
  *  LOCAL DATA 
  *********************************************************************************************************************/
-uint32 State= OFF_State;
+
 /**********************************************************************************************************************
  *  GLOBAL DATA
  *********************************************************************************************************************/
-
+void (*pSysTick_CallBack_Isr)(void);
 /**********************************************************************************************************************
  *  LOCAL FUNCTION PROTOTYPES
  *********************************************************************************************************************/
@@ -49,48 +41,41 @@ uint32 State= OFF_State;
  *********************************************************************************************************************/
 
 /******************************************************************************
-* \Syntax          : void TimerIsr(void)                                      
-* \Description     : Systick User ISR                                    
-*                                                                             
-* \Sync\Async      : Synchronous                                               
-* \Reentrancy      : Non Reentrant                                             
+* \Syntax          : void SysTick_Handler(void)
+* \Description     : Interrupt handler encapsulation for system timer Module
+*
+* \Sync\Async      : Synchronous   
+* \Reentrancy      : Non Reentrant       
 * \Parameters (in) : None                     
 * \Parameters (out): None                                                      
 * \Return value:   : None
 *******************************************************************************/
-void TimerIsr(void){
-	if(State == OFF_State){
-		Gpio_Pf1_On();
-		State= ON_State;
-		SysTick_Run(ON_Time);
-	}
-	else{
-		Gpio_Pf1_Off();
-		State= OFF_State;
-		SysTick_Run(OFF_Time);
-	}
+void SysTick_Handler(void)
+{
+
+	/*TODO : call user callback function*/
+  (*pSysTick_CallBack_Isr)();
+
 }
 
 /******************************************************************************
-* \Syntax          : int main(void)                                      
-* \Description     : main function contains GPIO, Timer, and Interrupt Initializations                                    
+* \Syntax          : void SysTick_Callback(void(*psystickUserIsr)(void))                                      
+* \Description     : connect systick call back ISR to user ISR                                    
 *                                                                             
 * \Sync\Async      : Synchronous                                               
 * \Reentrancy      : Non Reentrant                                             
-* \Parameters (in) : None                     
+* \Parameters (in) : pointer to user ISR function.                     
 * \Parameters (out): None                                                      
 * \Return value:   : None
 *******************************************************************************/
-int main (void){
-	Gpio_F_Init();
-	SysTick_Init();
-	SysTick_Callback(TimerIsr);
-	SysTick_Run(OFF_Time);
-	while(1){
-	}
-	return 0;
+void SysTick_Callback(void(*psystickUserIsr)(void))
+{
+	
+	/*TODO : connect user ISR to global callback ISR function.*/
+	pSysTick_CallBack_Isr= psystickUserIsr;
+
 }
 
 /**********************************************************************************************************************
- *  END OF FILE: main.c
+ *  END OF FILE: Interrupt.c
  *********************************************************************************************************************/

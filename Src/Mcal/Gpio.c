@@ -1,10 +1,10 @@
 /**********************************************************************************************************************
  *  FILE DESCRIPTION
  *  -----------------------------------------------------------------------------------------------------------------*/
-/**        \file  main.c
- *        \brief  main file
+/**        \file  Gpio.c
+ *        \brief  General Purpose Input Output Driver
  *
- *      \details  user systick ISR, and main function
+ *      \details  The Driver Configure GPIO portf pin1 - on board red led
  *               
  *
  *********************************************************************************************************************/
@@ -13,17 +13,9 @@
  *  INCLUDES
  *********************************************************************************************************************/
 #include "Std_Types.h"
+#include "tm4c123gh6pm.h"
 #include "Gpio.h"
-#include "Timer.h"
-#include "Interrupt.h"
 
-/* Delay time in Micro seconds */
-#define ON_Time 4000000
-#define OFF_Time 1000000
-
-/* LED state values. */
-#define ON_State 1
-#define OFF_State 0
 /**********************************************************************************************************************
 *  LOCAL MACROS CONSTANT\FUNCTION
 *********************************************************************************************************************/	
@@ -31,7 +23,7 @@
 /**********************************************************************************************************************
  *  LOCAL DATA 
  *********************************************************************************************************************/
-uint32 State= OFF_State;
+
 /**********************************************************************************************************************
  *  GLOBAL DATA
  *********************************************************************************************************************/
@@ -48,9 +40,11 @@ uint32 State= OFF_State;
  *  GLOBAL FUNCTIONS
  *********************************************************************************************************************/
 
+
 /******************************************************************************
-* \Syntax          : void TimerIsr(void)                                      
-* \Description     : Systick User ISR                                    
+* \Syntax          : void GPio_F_Init(void)                                      
+* \Description     : initialize GPIO port F Module by parsing the Configuration 
+*                    into GPIO F registers                                    
 *                                                                             
 * \Sync\Async      : Synchronous                                               
 * \Reentrancy      : Non Reentrant                                             
@@ -58,22 +52,29 @@ uint32 State= OFF_State;
 * \Parameters (out): None                                                      
 * \Return value:   : None
 *******************************************************************************/
-void TimerIsr(void){
-	if(State == OFF_State){
-		Gpio_Pf1_On();
-		State= ON_State;
-		SysTick_Run(ON_Time);
-	}
-	else{
-		Gpio_Pf1_Off();
-		State= OFF_State;
-		SysTick_Run(OFF_Time);
-	}
+void Gpio_F_Init(void)
+{
+
+	/*TODO Enable GPIO PortF clock*/
+  SYSCTL_RCGCGPIO_R |= 0x20; 
+
+  /*TODO : Set GPIO PortF pin 1 as output*/  
+	GPIO_PORTF_DIR_R |= 0x2;
+
+	/*TODO : Configure PortF as GPIO */
+	 GPIO_PORTF_AFSEL_R = 0x00;
+
+	/*TODO : Enable PortF pin1 Digital mode */
+	 GPIO_PORTF_DEN_R |= 0x2;
+
+	/*TODO : Initialize PortF pin0 with low */
+	GPIO_PORTF_DATA_R &= 0xFFFFFFDF;
+
 }
 
 /******************************************************************************
-* \Syntax          : int main(void)                                      
-* \Description     : main function contains GPIO, Timer, and Interrupt Initializations                                    
+* \Syntax          : void GPio_Pf1_On(void)                                      
+* \Description     : set GPIO portf Pin 1 with high                                    
 *                                                                             
 * \Sync\Async      : Synchronous                                               
 * \Reentrancy      : Non Reentrant                                             
@@ -81,16 +82,33 @@ void TimerIsr(void){
 * \Parameters (out): None                                                      
 * \Return value:   : None
 *******************************************************************************/
-int main (void){
-	Gpio_F_Init();
-	SysTick_Init();
-	SysTick_Callback(TimerIsr);
-	SysTick_Run(OFF_Time);
-	while(1){
-	}
-	return 0;
+void Gpio_Pf1_On(void)
+{
+
+	/*TODO : PortF pin1 high */
+	GPIO_PORTF_DATA_R |= 0x2;
+
+}
+
+
+/******************************************************************************
+* \Syntax          : void GPio_Pf1_Off(void)                                      
+* \Description     : set GPIO portf Pin 1 with Low                                    
+*                                                                             
+* \Sync\Async      : Synchronous                                               
+* \Reentrancy      : Non Reentrant                                             
+* \Parameters (in) : None                     
+* \Parameters (out): None                                                      
+* \Return value:   : None
+*******************************************************************************/
+void Gpio_Pf1_Off(void)
+{
+	
+	/*TODO : PortF pin1 Low */
+	GPIO_PORTF_DATA_R &= 0xFFFFFFFD;
+	
 }
 
 /**********************************************************************************************************************
- *  END OF FILE: main.c
+ *  END OF FILE: Gpio.c
  *********************************************************************************************************************/
