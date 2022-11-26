@@ -58,14 +58,14 @@ void Gpio_F_Init(void)
 	/*TODO Enable GPIO PortF clock*/
   SYSCTL_RCGCGPIO_R |= 0x20; 
 
-  /*TODO : Set GPIO PortF pin 1 as output*/  
+  /*TODO : Set GPIO PortF pin 1 as output, pin 0,4 as input*/  
 	GPIO_PORTF_DIR_R |= 0x2;
 
 	/*TODO : Configure PortF as GPIO */
 	 GPIO_PORTF_AFSEL_R = 0x00;
 
-	/*TODO : Enable PortF pin1 Digital mode */
-	 GPIO_PORTF_DEN_R |= 0x2;
+	/*TODO : Enable PortF pin0,1,4 Digital mode */
+	 GPIO_PORTF_DEN_R |= 0x13;
 
 	/*TODO : Initialize PortF pin0 with low */
 	GPIO_PORTF_DATA_R &= 0xFFFFFFDF;
@@ -106,6 +106,24 @@ void Gpio_Pf1_Off(void)
 	
 	/*TODO : PortF pin1 Low */
 	GPIO_PORTF_DATA_R &= 0xFFFFFFFD;
+	
+}
+
+/******************************************************************************
+* \Syntax          : uint32 GPio_Pf_Read(uint32)                                      
+* \Description     : read a pin value on port f                                   
+*                                                                             
+* \Sync\Async      : Synchronous                                               
+* \Reentrancy      : Non Reentrant                                             
+* \Parameters (in) : pin number                     
+* \Parameters (out): pin value                                                
+* \Return value:   : None
+*******************************************************************************/
+uint32 Gpio_Pf_Read(uint32 pin)
+{
+	
+	/*TODO : return pin value */
+	return (GPIO_PORTF_DATA_R>>pin)&0x1 ;
 	
 }
 
