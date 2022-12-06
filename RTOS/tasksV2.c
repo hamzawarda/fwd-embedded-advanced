@@ -2965,7 +2965,7 @@ BaseType_t xTaskIncrementTick( void )
 														#else /* configUSE_EDF_SCHEDULER */
 														/* make context switching if new task deadline 
 														 *earlier that the current task deadline. */
-														if( pxTCB->xStateListItem < pxCurrentTCB->xStateListItem )
+														if((xItemValue) < (listGET_LIST_ITEM_VALUE( &( pxCurrentTCB->xStateListItem ) )))
                             {
                                 xSwitchRequired = pdTRUE;
                             }
